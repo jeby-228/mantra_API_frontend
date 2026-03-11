@@ -7,10 +7,12 @@
 已安裝以下 GraphQL 相關套件：
 
 **執行時期依賴**：
+
 - `@urql/svelte` (v5.0.0) - Svelte 的 URQL GraphQL 客戶端
 - `graphql` (v16.13.1) - GraphQL 核心函式庫
 
 **開發依賴**：
+
 - `@graphql-codegen/cli` (v6.1.3) - GraphQL 程式碼產生器 CLI
 - `@graphql-codegen/typescript` (v5.0.9) - TypeScript 型別產生器
 - `@graphql-codegen/typescript-operations` (v5.0.9) - GraphQL 操作型別產生器
@@ -38,6 +40,7 @@ mantra_API_frontend/
 ### 3. 環境配置
 
 在 `.env.example` 中加入：
+
 ```env
 PUBLIC_GRAPHQL_ENDPOINT=https://member-api-0-0-4.onrender.com/graphql
 ```
@@ -45,6 +48,7 @@ PUBLIC_GRAPHQL_ENDPOINT=https://member-api-0-0-4.onrender.com/graphql
 ### 4. GraphQL 客戶端初始化
 
 在 `src/routes/+layout.svelte` 中已初始化 URQL 客戶端：
+
 - 使用 `setContextClient()` 設定全域客戶端
 - 所有子元件都可以使用 `getContextClient()` 取得客戶端
 
@@ -65,6 +69,7 @@ pnpm graphql:watch
 由於 `https://member-api-0-0-4.onrender.com/graphql` 目前無法從本環境存取，您需要：
 
 1. **方法一：使用 introspection（推薦）**
+
    ```bash
    # 在可以連線到 API 的環境執行
    pnpm graphql:codegen
@@ -75,7 +80,7 @@ pnpm graphql:watch
    - 放在專案根目錄
    - 更新 `codegen.ts` 的 `schema` 設定：
      ```typescript
-     schema: './schema.graphql'
+     schema: './schema.graphql';
      ```
 
 ### 步驟 2：撰寫實際的 GraphQL 操作
@@ -85,20 +90,20 @@ pnpm graphql:watch
 ```graphql
 # 範例：src/lib/graphql/queries/member.graphql
 query GetMember($id: ID!) {
-  member(id: $id) {
-    id
-    name
-    email
-    createdAt
-  }
+	member(id: $id) {
+		id
+		name
+		email
+		createdAt
+	}
 }
 
 query GetAllMembers {
-  members {
-    id
-    name
-    email
-  }
+	members {
+		id
+		name
+		email
+	}
 }
 ```
 
@@ -115,26 +120,26 @@ pnpm graphql:codegen
 ```svelte
 <!-- src/routes/members/+page.svelte -->
 <script lang="ts">
-  import { queryStore, getContextClient } from '@urql/svelte';
-  import { GetAllMembersDocument } from '$lib/graphql/generated';
+	import { queryStore, getContextClient } from '@urql/svelte';
+	import { GetAllMembersDocument } from '$lib/graphql/generated';
 
-  const client = getContextClient();
-  const membersQuery = queryStore({
-    client,
-    query: GetAllMembersDocument
-  });
+	const client = getContextClient();
+	const membersQuery = queryStore({
+		client,
+		query: GetAllMembersDocument
+	});
 </script>
 
 {#if $membersQuery.fetching}
-  <p>載入中...</p>
+	<p>載入中...</p>
 {:else if $membersQuery.error}
-  <p>錯誤：{$membersQuery.error.message}</p>
+	<p>錯誤：{$membersQuery.error.message}</p>
 {:else if $membersQuery.data}
-  <ul>
-    {#each $membersQuery.data.members as member}
-      <li>{member.name} ({member.email})</li>
-    {/each}
-  </ul>
+	<ul>
+		{#each $membersQuery.data.members as member}
+			<li>{member.name} ({member.email})</li>
+		{/each}
+	</ul>
 {/if}
 ```
 
@@ -144,9 +149,9 @@ pnpm graphql:codegen
 
 ```typescript
 export const graphqlClient = createClient({
-  url: PUBLIC_GRAPHQL_ENDPOINT,
-  exchanges: [cacheExchange, fetchExchange],
-  requestPolicy: 'cache-first'
+	url: PUBLIC_GRAPHQL_ENDPOINT,
+	exchanges: [cacheExchange, fetchExchange],
+	requestPolicy: 'cache-first'
 });
 ```
 
@@ -158,13 +163,13 @@ export const graphqlClient = createClient({
 
 ```typescript
 const config: CodegenConfig = {
-  schema: process.env.PUBLIC_GRAPHQL_ENDPOINT,
-  documents: ['src/**/*.graphql', 'src/**/*.gql'],
-  generates: {
-    'src/lib/graphql/generated.ts': {
-      plugins: ['typescript', 'typescript-operations', 'typescript-urql']
-    }
-  }
+	schema: process.env.PUBLIC_GRAPHQL_ENDPOINT,
+	documents: ['src/**/*.graphql', 'src/**/*.gql'],
+	generates: {
+		'src/lib/graphql/generated.ts': {
+			plugins: ['typescript', 'typescript-operations', 'typescript-urql']
+		}
+	}
 };
 ```
 
