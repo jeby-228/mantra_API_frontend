@@ -42,9 +42,8 @@ description: Copilot AI 協作指引 - 程式碼風格與開發原則
 
 ## API 設計原則
 
-- RESTful 風格
-- 使用標準 HTTP 狀態碼
-- 統一的錯誤回應格式
+- graphql 來傳輸資料
+- 可以參考後端程式碼 https://github.com/jeby-228/mantra_API
 
 ## 使用套件庫
 
