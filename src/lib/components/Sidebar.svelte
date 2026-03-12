@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { slide, fade } from 'svelte/transition';
-	import { GithubIcon, UserIcon, SettingsIcon, HelpCircleIcon } from '@lucide/svelte';
+	import { GithubIcon, UserIcon, SettingsIcon, HelpCircleIcon, Quote } from '@lucide/svelte';
 	import { Navigation } from '@skeletonlabs/skeleton-svelte';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/stores';
@@ -47,6 +47,16 @@
 						>
 							<UserIcon class="mr-2 size-5" />
 							<Navigation.TriggerText>About</Navigation.TriggerText>
+						</Navigation.TriggerAnchor>
+						<Navigation.TriggerAnchor
+							href={resolve('/quotes' as '/')}
+							class={isActive('/quotes') || $page.url.pathname.startsWith('/quotes/')
+								? 'preset-filled'
+								: ''}
+							onclick={handleClick}
+						>
+							<Quote class="mr-2 size-5" />
+							<Navigation.TriggerText>名言系統</Navigation.TriggerText>
 						</Navigation.TriggerAnchor>
 					</Navigation.Menu>
 				</Navigation.Group>

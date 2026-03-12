@@ -1,0 +1,28 @@
+# Mutation to create a new quote record
+mutation CreateQuoteRecord($input: CreateQuoteRecordInput!) {
+	createQuoteRecord(input: $input) {
+		id
+		jb_name
+		quote
+		said_at
+		created_at
+		updated_at
+	}
+}
+
+# Mutation to update an existing quote record
+mutation UpdateQuoteRecord($id: ID!, $input: UpdateQuoteRecordInput!) {
+	updateQuoteRecord(id: $id, input: $input) {
+		id
+		jb_name
+		quote
+		said_at
+		created_at
+		updated_at
+	}
+}
+
+# Mutation to delete a quote record
+mutation DeleteQuoteRecord($id: ID!) {
+	deleteQuoteRecord(id: $id)
+}

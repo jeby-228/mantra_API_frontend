@@ -1,0 +1,28 @@
+# Query to fetch a single quote record by ID
+query GetQuoteRecord($id: ID!) {
+	quoteRecord(id: $id) {
+		id
+		jb_name
+		quote
+		said_at
+		created_at
+		updated_at
+	}
+}
+
+# Query to fetch a list of quote records with pagination
+query GetQuoteRecords($limit: Int, $offset: Int) {
+	quoteRecords(limit: $limit, offset: $offset) {
+		records {
+			id
+			jb_name
+			quote
+			said_at
+			created_at
+			updated_at
+		}
+		total
+		limit
+		offset
+	}
+}
