@@ -1,0 +1,26 @@
+# 範例：建立使用者
+# 這是一個基礎範例，請根據實際的 GraphQL schema 進行調整
+
+# 當您從後端取得實際的 schema 後，請取消註解並修改以下變更操作：
+
+# mutation CreateUser($input: CreateUserInput!) {
+#   createUser(input: $input) {
+#     id
+#     name
+#     email
+#   }
+# }
+
+# 範例：更新使用者
+# mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
+#   updateUser(id: $id, input: $input) {
+#     id
+#     name
+#     email
+#   }
+# }
+
+# 暫時的佔位查詢（可刪除）
+query PlaceholderMutation {
+	__typename
+}
