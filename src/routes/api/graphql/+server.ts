@@ -6,7 +6,7 @@ const GRAPHQL_ENDPOINT = env.PUBLIC_GRAPHQL_ENDPOINT;
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const body = await request.text();
 	const token = cookies.get('token');
-	
+
 	const headers: Record<string, string> = {
 		'Content-Type': 'application/json'
 	};

@@ -2,8 +2,11 @@ import { env } from '$env/dynamic/public';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
-const API_BASE_URL = (env.PUBLIC_GRAPHQL_ENDPOINT || 'https://member-api-0-0-4.onrender.com/graphql').replace(/\/graphql$/, '');
-const LINE_UNBIND_ENDPOINT = env.PUBLIC_LINE_UNBIND_ENDPOINT || `${API_BASE_URL}/api/v1/auth/line/unbind`;
+const API_BASE_URL = (
+	env.PUBLIC_GRAPHQL_ENDPOINT || 'https://member-api-0-0-4.onrender.com/graphql'
+).replace(/\/graphql$/, '');
+const LINE_UNBIND_ENDPOINT =
+	env.PUBLIC_LINE_UNBIND_ENDPOINT || `${API_BASE_URL}/api/v1/auth/line/unbind`;
 
 type UserWithLineHints = {
 	line_bound?: boolean;

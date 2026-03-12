@@ -1,18 +1,17 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import type { ActionData } from './$types';
-	import { UserIcon } from '@lucide/svelte';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 	const user = data.user!;
 </script>
 
-<div class="container mx-auto p-4 max-w-2xl">
-	<h1 class="h1 mb-8">User Profile</h1>
-
-	<div class="card p-6 shadow-xl space-y-6">
+<div class="container mx-auto max-w-2xl p-4">
+	<div class="space-y-6 card p-6 shadow-xl">
 		<header class="flex items-center space-x-4 border-b border-surface-500/30 pb-6">
-			<div class="placeholder-circle w-20 h-20 bg-surface-200-700-token flex items-center justify-center text-3xl font-bold rounded-full">
+			<div
+				class="bg-surface-200-700-token flex placeholder-circle h-20 w-20 items-center justify-center rounded-full text-3xl font-bold"
+			>
 				{user.name.charAt(0).toUpperCase()}
 			</div>
 			<div>
@@ -35,49 +34,36 @@
 				<div class="alert variant-filled-error">{form.lineActionError}</div>
 			{/if}
 
-			<div class="flex items-center space-x-4 p-4 rounded-container-token bg-surface-50-900-token">
-				<div class="p-2 bg-primary-500/10 rounded-full text-primary-500">
-					<UserIcon class="size-6" />
-				</div>
-				<div>
-					<p class="text-sm text-surface-500 font-semibold uppercase tracking-wider">Name</p>
-					<p class="text-lg">{user.name}</p>
-				</div>
-			</div>
-			<div class="rounded-container-token border border-surface-500/30 p-4 space-y-3">
+			<div class="rounded-container-token space-y-3 border border-surface-500/30 p-4">
 				<h3 class="h4 font-bold">LINE Account</h3>
 				<div class="flex items-center justify-between gap-3">
-					<p class="text-surface-500 text-sm">Current status</p>
+					<p class="text-sm text-surface-500">Current status</p>
 					{#if data.lineBound === true}
-						<span class="badge variant-filled-success">Bound</span>
+						<span class="variant-filled-success badge">Bound</span>
 					{:else if data.lineBound === false}
-						<span class="badge variant-filled-warning">Not Bound</span>
+						<span class="variant-filled-warning badge">Not Bound</span>
 					{:else}
-						<span class="badge variant-filled-surface">Unknown</span>
+						<span class="variant-filled-surface badge">Unknown</span>
 					{/if}
 				</div>
-				<p class="text-surface-500 text-sm">Bind LINE for fast social login, or unbind to disconnect.</p>
+				<p class="text-sm text-surface-500">
+					Bind LINE for fast social login, or unbind to disconnect.
+				</p>
 				<div class="flex flex-wrap gap-3">
 					{#if data.lineBound !== true}
 						<form method="POST" action="?/bindLine">
-							<button type="submit" class="btn" style="background-color: #06C755; color: white;">Bind LINE</button>
+							<button type="submit" class="btn" style="background-color: #06C755; color: white;"
+								>Bind LINE</button
+							>
 						</form>
 					{/if}
 					{#if data.lineBound !== false}
 						<form method="POST" action="?/unbindLine">
-							<button type="submit" class="btn variant-filled-error">Unbind LINE</button>
+							<button type="submit" class="variant-filled-error btn">Unbind LINE</button>
 						</form>
 					{/if}
 				</div>
 			</div>
 		</div>
-
-		<footer class="pt-6 border-t border-surface-500/30 flex justify-end">
-			<form action="/logout" method="POST">
-				<button type="submit" class="btn variant-filled-error">
-					Log Out
-				</button>
-			</form>
-		</footer>
 	</div>
 </div>

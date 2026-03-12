@@ -1,5 +1,5 @@
 <script lang="ts">
-	import {  CircleUserIcon, MenuIcon, SearchIcon, LogOutIcon, LogInIcon } from '@lucide/svelte';
+	import { CircleUserIcon, MenuIcon, SearchIcon, LogOutIcon, LogInIcon } from '@lucide/svelte';
 	import { AppBar } from '@skeletonlabs/skeleton-svelte';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/stores';
@@ -64,11 +64,7 @@
 					</button>
 				</form>
 			{:else}
-				<a
-					href={resolve('/login' as '/')}
-					class="btn-icon hover:preset-tonal"
-					aria-label="登入"
-				>
+				<a href={resolve('/login' as '/')} class="btn-icon hover:preset-tonal" aria-label="登入">
 					<LogInIcon class="size-6" />
 				</a>
 			{/if}

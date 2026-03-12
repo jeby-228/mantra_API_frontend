@@ -2,7 +2,9 @@ import { env } from '$env/dynamic/public';
 import { isRedirect, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-const API_BASE_URL = (env.PUBLIC_GRAPHQL_ENDPOINT || 'https://member-api-0-0-4.onrender.com/graphql').replace(/\/graphql$/, '');
+const API_BASE_URL = (
+	env.PUBLIC_GRAPHQL_ENDPOINT || 'https://member-api-0-0-4.onrender.com/graphql'
+).replace(/\/graphql$/, '');
 const LINE_BIND_ENDPOINT = env.PUBLIC_LINE_BIND_ENDPOINT || `${API_BASE_URL}/api/v1/auth/line/bind`;
 
 type CallbackState = {
@@ -45,7 +47,8 @@ export const load: PageServerLoad = async ({ url, cookies }) => {
 		const redirectURI = env.PUBLIC_LINE_REDIRECT_URI || 'http://localhost:5173/auth/line/callback';
 		const token = cookies.get('token');
 
-		const endpoint = callbackState.mode === 'bind' ? LINE_BIND_ENDPOINT : `${API_BASE_URL}/api/v1/auth/line`;
+		const endpoint =
+			callbackState.mode === 'bind' ? LINE_BIND_ENDPOINT : `${API_BASE_URL}/api/v1/auth/line`;
 		const headers: Record<string, string> = {
 			'Content-Type': 'application/json'
 		};
@@ -108,7 +111,6 @@ export const load: PageServerLoad = async ({ url, cookies }) => {
 		}
 
 		throw redirect(303, callbackState.return_to || '/');
-
 	} catch (err) {
 		if (isRedirect(err)) throw err;
 		console.error('Callback error:', err);

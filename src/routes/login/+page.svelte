@@ -12,7 +12,7 @@
 </script>
 
 <div class="container mx-auto flex h-full items-center justify-center p-4">
-	<div class="card w-full max-w-sm p-4 shadow-xl">
+	<div class="w-full max-w-sm card p-4 shadow-xl">
 		<header class="card-header text-center">
 			<h2 class="h2">Welcome Back</h2>
 		</header>
@@ -20,13 +20,7 @@
 			<form method="POST" use:enhance class="space-y-4">
 				<label class="label">
 					<span>Email</span>
-					<input
-						class="input"
-						type="email"
-						name="email"
-						placeholder="user@example.com"
-						required
-					/>
+					<input class="input" type="email" name="email" placeholder="user@example.com" required />
 				</label>
 				<label class="label">
 					<span>Password</span>
@@ -70,13 +64,13 @@
 
 			<a
 				href="/auth/line/login"
-				class="btn w-full variant-filled flex items-center justify-center"
+				class="variant-filled btn flex w-full items-center justify-center"
 				style="background-color: #06C755; color: white;"
 			>
 				<span>Login with LINE</span>
 			</a>
 		</section>
-		<footer class="card-footer text-center p-4">
+		<footer class="card-footer p-4 text-center">
 			<p>Don't have an account? <a href="/register" class="anchor">Register</a></p>
 		</footer>
 	</div>

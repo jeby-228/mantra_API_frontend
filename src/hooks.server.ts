@@ -9,7 +9,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 			const user = JSON.parse(userStr);
 			event.locals.user = user;
 			event.locals.token = token;
-		} catch (e) {
+		} catch {
 			// Invalid user cookie
 			event.locals.user = null;
 			event.locals.token = null;

@@ -2,7 +2,9 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { env } from '$env/dynamic/public';
 
-const API_BASE_URL = (env.PUBLIC_GRAPHQL_ENDPOINT || 'https://member-api-0-0-4.onrender.com/graphql').replace(/\/graphql$/, '');
+const API_BASE_URL = (
+	env.PUBLIC_GRAPHQL_ENDPOINT || 'https://member-api-0-0-4.onrender.com/graphql'
+).replace(/\/graphql$/, '');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (locals.user) {
@@ -49,7 +51,6 @@ export const actions: Actions = {
 				secure: import.meta.env.PROD,
 				maxAge: 60 * 60 * 24 * 7
 			});
-
 		} catch (error) {
 			console.error('Login error:', error);
 			return fail(500, { error: 'An unexpected error occurred' });
