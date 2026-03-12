@@ -31,6 +31,9 @@ importers:
       graphql:
         specifier: ^16.13.1
         version: 16.13.1
+      graphql-tag:
+        specifier: ^2.12.6
+        version: 2.12.6(graphql@16.13.1)
       lucide-svelte:
         specifier: ^0.563.0
         version: 0.563.0(svelte@5.53.5)
