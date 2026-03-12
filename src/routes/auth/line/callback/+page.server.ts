@@ -1,13 +1,36 @@
-import { fail, redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
 import { env } from '$env/dynamic/public';
+import { isRedirect, redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
 const API_BASE_URL = (env.PUBLIC_GRAPHQL_ENDPOINT || 'https://member-api-0-0-4.onrender.com/graphql').replace(/\/graphql$/, '');
+const LINE_BIND_ENDPOINT = env.PUBLIC_LINE_BIND_ENDPOINT || `${API_BASE_URL}/api/v1/auth/line/bind`;
+
+type CallbackState = {
+	mode?: 'login' | 'bind';
+	return_to?: string;
+};
+
+function parseState(state: string | null): CallbackState {
+	if (!state) {
+		return { mode: 'login', return_to: '/' };
+	}
+
+	try {
+		const [rawMode, rawReturnTo] = state.split('.', 3);
+		return {
+			mode: rawMode === 'bind' ? 'bind' : 'login',
+			return_to: rawReturnTo ? decodeURIComponent(rawReturnTo) : '/'
+		};
+	} catch {
+		return { mode: 'login', return_to: '/' };
+	}
+}
 
 export const load: PageServerLoad = async ({ url, cookies }) => {
 	const code = url.searchParams.get('code');
 	const state = url.searchParams.get('state');
 	const error = url.searchParams.get('error');
+	const callbackState = parseState(state);
 
 	if (error) {
 		return { error: `LINE Login failed: ${error}` };
@@ -20,43 +43,74 @@ export const load: PageServerLoad = async ({ url, cookies }) => {
 	// Exchange code for token via Backend API
 	try {
 		const redirectURI = env.PUBLIC_LINE_REDIRECT_URI || 'http://localhost:5173/auth/line/callback';
-		
-		const response = await fetch(`${API_BASE_URL}/api/v1/auth/line`, {
+		const token = cookies.get('token');
+
+		const endpoint = callbackState.mode === 'bind' ? LINE_BIND_ENDPOINT : `${API_BASE_URL}/api/v1/auth/line`;
+		const headers: Record<string, string> = {
+			'Content-Type': 'application/json'
+		};
+
+		if (callbackState.mode === 'bind') {
+			if (!token) {
+				throw redirect(303, '/login');
+			}
+			headers.Authorization = `Bearer ${token}`;
+		}
+
+		const response = await fetch(endpoint, {
 			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ 
-				code, 
-				redirect_uri: redirectURI 
+			headers,
+			body: JSON.stringify({
+				code,
+				redirect_uri: redirectURI
 			})
 		});
 
 		if (!response.ok) {
-			console.error('Backend LINE login failed:', response.status);
+			console.error('Backend LINE callback failed:', response.status);
+			if (callbackState.mode === 'bind') {
+				throw redirect(303, '/profile?line_error=bind_failed');
+			}
 			return { error: 'Backend login failed. Please ensure the backend supports LINE Login.' };
 		}
 
 		const result = await response.json();
-		const { token, user } = result;
+		const { token: nextToken, user } = result;
 
-		// Set cookies (Same as normal login)
-		cookies.set('token', token, {
+		if (nextToken) {
+			cookies.set('token', nextToken, {
+				path: '/',
+				httpOnly: true,
+				secure: import.meta.env.PROD,
+				maxAge: 60 * 60 * 24 * 7
+			});
+		}
+
+		if (user) {
+			cookies.set('user', JSON.stringify(user), {
+				path: '/',
+				httpOnly: true,
+				secure: import.meta.env.PROD,
+				maxAge: 60 * 60 * 24 * 7
+			});
+		}
+
+		// Persist latest LINE binding status for profile UI.
+		cookies.set('line_bound', '1', {
 			path: '/',
 			httpOnly: true,
 			secure: import.meta.env.PROD,
 			maxAge: 60 * 60 * 24 * 7
 		});
 
-		cookies.set('user', JSON.stringify(user), {
-			path: '/',
-			httpOnly: true,
-			secure: import.meta.env.PROD,
-			maxAge: 60 * 60 * 24 * 7
-		});
+		if (callbackState.mode === 'bind') {
+			throw redirect(303, '/profile?line_status=bound');
+		}
 
-		throw redirect(303, '/');
+		throw redirect(303, callbackState.return_to || '/');
 
 	} catch (err) {
-		if (err instanceof Response) throw err; // Handle redirect
+		if (isRedirect(err)) throw err;
 		console.error('Callback error:', err);
 		return { error: 'An unexpected error occurred during login.' };
 	}

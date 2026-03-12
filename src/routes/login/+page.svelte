@@ -70,19 +70,10 @@
 
 			<a
 				href="/auth/line/login"
-				class="btn w-full variant-filled"
+				class="btn w-full variant-filled flex items-center justify-center"
 				style="background-color: #06C755; color: white;"
 			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 24 24"
-					class="w-6 h-6 mr-2 fill-current"
-				>
-					<path
-						d="M20.2 10.5c0-4.4-4.8-8-10.8-8s-10.8 3.6-10.8 8c0 3.9 3.4 7.2 8.5 7.9.3 0 .7.1.8.2.2.1.2.3.1.5-.1.4-.2 1.3-.3 1.9-.1.4-.3.9 0 1.2.4.3.8.3 1.4-.1 5.9-3.4 5.9-3.5 8.3-6 2.3-2.3 2.8-5.1 2.8-7.6zm-14.7.3c0-.8.7-1.5 1.5-1.5h.6c.8 0 1.5.7 1.5 1.5v2.8h1.8c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5h-3.9c-.8 0-1.5-.7-1.5-1.5v-4.3zm6.8 4.3c0 .8-.7 1.5-1.5 1.5s-1.5-.7-1.5-1.5v-4.3c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5v4.3zm5.7-2.6c.7.4 1.1 1.2 1.1 2v.6c0 .8-.7 1.5-1.5 1.5s-1.5-.7-1.5-1.5v-2.3l-1.6 2.3c-.3.4-.7.6-1.1.6s-1.5-.7-1.5-1.5v-4.3c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5v2.3l1.6-2.3c.3-.4.7-.6 1.1-.6.8 0 1.4.7 1.4 1.4v2.5z"
-					/>
-				</svg>
-				Login with LINE
+				<span>Login with LINE</span>
 			</a>
 		</section>
 		<footer class="card-footer text-center p-4">
