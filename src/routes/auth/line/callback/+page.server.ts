@@ -2,10 +2,8 @@ import { env } from '$env/dynamic/public';
 import { isRedirect, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-const API_BASE_URL = (
-	env.PUBLIC_GRAPHQL_ENDPOINT || 'https://member-api-0-0-4.onrender.com/graphql'
-).replace(/\/graphql$/, '');
-const LINE_BIND_ENDPOINT = env.PUBLIC_LINE_BIND_ENDPOINT || `${API_BASE_URL}/api/v1/auth/line/bind`;
+const API_BASE_URL = env.PUBLIC_API_BASE_URL;
+const LINE_BIND_ENDPOINT = `${API_BASE_URL}/api/v1/auth/line/bind`;
 
 type CallbackState = {
 	mode?: 'login' | 'bind';

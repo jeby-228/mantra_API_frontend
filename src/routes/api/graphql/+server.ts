@@ -1,7 +1,7 @@
 import { env } from '$env/dynamic/public';
 import type { RequestHandler } from '@sveltejs/kit';
 
-const GRAPHQL_ENDPOINT = env.PUBLIC_GRAPHQL_ENDPOINT;
+const GRAPHQL_ENDPOINT = `${env.PUBLIC_API_BASE_URL}/graphql`;
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const body = await request.text();

@@ -2,9 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { env } from '$env/dynamic/public';
 
-const API_BASE_URL = (
-	env.PUBLIC_GRAPHQL_ENDPOINT || 'https://member-api-0-0-4.onrender.com/graphql'
-).replace(/\/graphql$/, '');
+const API_BASE_URL = env.PUBLIC_API_BASE_URL;
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (locals.user) {
