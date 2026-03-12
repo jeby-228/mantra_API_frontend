@@ -1,0 +1,14 @@
+query GetQuoteRecords($limit: Int, $offset: Int) {
+	quoteRecords(limit: $limit, offset: $offset) {
+		records {
+			id
+			jb_name
+			quote
+			said_at
+			created_at
+		}
+		total
+		limit
+		offset
+	}
+}

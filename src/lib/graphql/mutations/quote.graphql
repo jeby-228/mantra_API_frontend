@@ -1,0 +1,9 @@
+mutation CreateQuoteRecord($input: CreateQuoteRecordInput!) {
+	createQuoteRecord(input: $input) {
+		id
+		jb_name
+		quote
+		said_at
+		created_at
+	}
+}
