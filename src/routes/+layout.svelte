@@ -12,6 +12,11 @@
 		trackPageView($page.url.pathname);
 	});
 	// google analytics 4
+	// graphql client
+	import { setContextClient } from '@urql/svelte';
+	import { graphqlClient } from '$lib/graphql/client';
+	setContextClient(graphqlClient);
+	// graphql client
 	import './layout.css';
 	import AppHeader from '$lib/components/AppHeader.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
