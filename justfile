@@ -22,6 +22,10 @@ test:
 
 check:
     pnpm run check
+    
+graphql:
+    pnpm graphql:codegen
+    just fmt
 
 # 快速檢查（跳過測試和建置，適合開發時使用）
 quick:
