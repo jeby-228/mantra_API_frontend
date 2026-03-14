@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { CalendarIcon, CircleUserIcon, MenuIcon, SearchIcon } from '@lucide/svelte';
+	import { CircleUserIcon, MenuIcon, SearchIcon, LogOutIcon, LogInIcon } from '@lucide/svelte';
 	import { AppBar } from '@skeletonlabs/skeleton-svelte';
 	import { resolve } from '$app/paths';
+	import { page } from '$app/stores';
 	import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
 	import SearchBar from '$lib/components/SearchBar.svelte';
 
@@ -48,16 +49,25 @@
 			>
 				<SearchIcon class="size-6" />
 			</button>
-			<button type="button" class="btn-icon hover:preset-tonal" aria-label="行事曆">
-				<CalendarIcon class="size-6" />
-			</button>
-			<a
-				href={resolve('/profile' as '/')}
-				class="btn-icon hover:preset-tonal"
-				aria-label="使用者資料"
-			>
-				<CircleUserIcon class="size-6" />
-			</a>
+			{#if $page.data.user}
+				<a
+					href={resolve('/profile' as '/')}
+					class="btn-icon hover:preset-tonal"
+					aria-label="使用者資料"
+					title={$page.data.user.name}
+				>
+					<CircleUserIcon class="size-6" />
+				</a>
+				<form action="/logout" method="POST" class="inline-block">
+					<button type="submit" class="btn-icon hover:preset-tonal" aria-label="登出">
+						<LogOutIcon class="size-6" />
+					</button>
+				</form>
+			{:else}
+				<a href={resolve('/login' as '/')} class="btn-icon hover:preset-tonal" aria-label="登入">
+					<LogInIcon class="size-6" />
+				</a>
+			{/if}
 		</AppBar.Trail>
 	</AppBar.Toolbar>
 	<SearchBar bind:show={showSearch} bind:query={searchQuery} />
