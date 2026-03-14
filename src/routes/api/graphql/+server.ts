@@ -1,13 +1,22 @@
 import { env } from '$env/dynamic/public';
 import type { RequestHandler } from '@sveltejs/kit';
 
-const GRAPHQL_ENDPOINT = env.PUBLIC_GRAPHQL_ENDPOINT;
+const GRAPHQL_ENDPOINT = `${env.PUBLIC_API_BASE_URL}/graphql`;
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, cookies }) => {
 	const body = await request.text();
+	const token = cookies.get('token');
+
+	const headers: Record<string, string> = {
+		'Content-Type': 'application/json'
+	};
+	if (token) {
+		headers['Authorization'] = `Bearer ${token}`;
+	}
+
 	const response = await fetch(GRAPHQL_ENDPOINT, {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
+		headers,
 		body
 	});
 	const data = await response.text();
