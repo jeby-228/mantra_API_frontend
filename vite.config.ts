@@ -2,6 +2,7 @@ import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import { execSync } from 'child_process';
 
 function getGitInfo() {
@@ -26,7 +27,66 @@ function getGitInfo() {
 const gitInfo = getGitInfo();
 
 export default defineConfig({
-	plugins: [tailwindcss(), sveltekit()],
+	plugins: [
+		tailwindcss(),
+		SvelteKitPWA({
+			registerType: 'autoUpdate',
+			includeAssets: ['favicon.svg', 'robots.txt'],
+			manifest: {
+				name: 'Jeby Website',
+				short_name: 'Jeby',
+				start_url: '/',
+				scope: '/',
+				display: 'standalone',
+				background_color: '#ffffff',
+				theme_color: '#0f172a',
+				icons: [
+					{
+						src: '/pwa-192.png',
+						sizes: '192x192',
+						type: 'image/png'
+					},
+					{
+						src: '/pwa-512.png',
+						sizes: '512x512',
+						type: 'image/png'
+					},
+					{
+						src: '/pwa-maskable.png',
+						sizes: '512x512',
+						type: 'image/png',
+						purpose: 'maskable'
+					}
+				]
+			},
+			workbox: {
+				clientsClaim: true,
+				skipWaiting: true,
+				runtimeCaching: [
+					{
+						urlPattern: ({ url }) => url.origin === self.location.origin,
+						handler: 'NetworkFirst',
+						options: {
+							cacheName: 'pages',
+							networkTimeoutSeconds: 3
+						}
+					},
+					{
+						urlPattern: ({ request }) => request.destination === 'image',
+						handler: 'CacheFirst',
+						options: {
+							cacheName: 'images',
+							expiration: { maxEntries: 60, maxAgeSeconds: 60 * 60 * 24 * 30 }
+						}
+					}
+				]
+			},
+			devOptions: {
+				enabled: true
+			}
+		}),
+		sveltekit()
+	],
 	define: {
 		__GIT_BRANCH__: JSON.stringify(gitInfo.branch),
 		__GIT_VERSION__: JSON.stringify(gitInfo.version),

@@ -39,6 +39,11 @@ cp .env.example .env
 - Google Analytics 4 (GA4) - 網站行為與流量追蹤
 - Vercel Speed Insights - 網站速度分析
 
+## PWA 支援
+
+- 透過 `@vite-pwa/sveltekit` 產生 manifest 與 service worker，瀏覽器會自動註冊並自動更新。
+- PWA 圖示位於 `static/pwa-192.png`、`static/pwa-512.png`、`static/pwa-maskable.png`，可依品牌需求替換。
+
 ## gitflow
 
 ![GitFlow](gitflow.svg)

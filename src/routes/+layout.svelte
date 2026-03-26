@@ -8,6 +8,8 @@
 	// google analytics 4
 	import { page } from '$app/stores';
 	import { trackPageView } from '$lib/analytics';
+	import { browser } from '$app/environment';
+	import { registerSW } from 'virtual:pwa-register';
 	$effect(() => {
 		trackPageView($page.url.pathname);
 	});
@@ -25,6 +27,10 @@
 	let showSidebar = $state(false);
 	let showSearch = $state(false);
 	let searchQuery = $state('');
+
+	if (browser) {
+		registerSW({ immediate: true });
+	}
 </script>
 
 <AppHeader bind:showSearch bind:searchQuery onMenuToggle={() => (showSidebar = !showSidebar)} />
