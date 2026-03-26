@@ -3,7 +3,6 @@
 	import type { ActionData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
-	const user = data.user!;
 </script>
 
 <div class="container mx-auto max-w-2xl p-4">
@@ -12,10 +11,10 @@
 			<div
 				class="bg-surface-200-700-token flex placeholder-circle h-20 w-20 items-center justify-center rounded-full text-3xl font-bold"
 			>
-				{user.name.charAt(0).toUpperCase()}
+				{data.user!.name.charAt(0).toUpperCase()}
 			</div>
 			<div>
-				<h2 class="h3 font-bold">{user.name}</h2>
+				<h2 class="h3 font-bold">{data.user!.name}</h2>
 				<p class="text-surface-500">Member</p>
 			</div>
 		</header>
