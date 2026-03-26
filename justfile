@@ -23,7 +23,7 @@ test:
 
 check:
     pnpm run check
-    
+
 graphql:
     pnpm graphql:codegen
     just fmt
