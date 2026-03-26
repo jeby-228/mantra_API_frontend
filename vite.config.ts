@@ -25,6 +25,7 @@ function getGitInfo() {
 }
 
 const gitInfo = getGitInfo();
+const isDev = process.env.NODE_ENV === 'development';
 
 export default defineConfig({
 	plugins: [
@@ -65,8 +66,10 @@ export default defineConfig({
 				]
 			},
 			workbox: {
+				// 對 SvelteKit（SSR/多頁）來說，把 navigateFallback 指到 /offline 會讓所有導覽都變成離線頁。
+				// 這裡改回首頁作為 app shell；真正離線時的體驗建議用 injectManifest 自訂 catch handler 處理。
 				navigateFallback: '/',
-				navigateFallbackDenylist: [/^\/api\//],
+				navigateFallbackDenylist: [/^\/api\//, /^\/offline\/?$/],
 				runtimeCaching: [
 					{
 						urlPattern: /\.(?:js|css)$/i,
@@ -104,6 +107,7 @@ export default defineConfig({
 				]
 			},
 			devOptions: {
+				// dev 也提供 manifest（避免 /manifest.webmanifest 404），但 SW 接管會被 +layout.svelte 在 dev 模式主動註銷
 				enabled: true
 			}
 		})

@@ -3,6 +3,8 @@
 	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import { onMount } from 'svelte';
+	import { dev } from '$app/environment';
+	import { goto } from '$app/navigation';
 	import { registerSW } from 'virtual:pwa-register';
 	injectSpeedInsights();
 	injectAnalytics();
@@ -29,6 +31,23 @@
 	let searchQuery = $state('');
 
 	onMount(() => {
+		// 避免開發模式被既有 SW 快取影響，導致誤進離線頁。
+		if (dev && 'serviceWorker' in navigator) {
+			void (async () => {
+				const registrations = await navigator.serviceWorker.getRegistrations();
+				await Promise.all(registrations.map((registration) => registration.unregister()));
+				if ('caches' in window) {
+					const cacheKeys = await caches.keys();
+					await Promise.all(cacheKeys.map((key) => caches.delete(key)));
+				}
+			})();
+			return;
+		}
+
+		if (navigator.onLine && window.location.pathname === '/offline') {
+			void goto('/', { replaceState: true });
+		}
+
 		registerSW({ immediate: true });
 	});
 </script>
