@@ -2,6 +2,8 @@
 	// vercel speed insights and analytics
 	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
+	import { onMount } from 'svelte';
+	import { registerSW } from 'virtual:pwa-register';
 	injectSpeedInsights();
 	injectAnalytics();
 	// vercel speed insights and analytics
@@ -25,6 +27,10 @@
 	let showSidebar = $state(false);
 	let showSearch = $state(false);
 	let searchQuery = $state('');
+
+	onMount(() => {
+		registerSW({ immediate: true });
+	});
 </script>
 
 <AppHeader bind:showSearch bind:searchQuery onMenuToggle={() => (showSidebar = !showSidebar)} />

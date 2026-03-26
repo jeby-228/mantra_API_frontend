@@ -2,6 +2,7 @@ import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { VitePWA } from 'vite-plugin-pwa';
 import { execSync } from 'child_process';
 
 function getGitInfo() {
@@ -26,7 +27,87 @@ function getGitInfo() {
 const gitInfo = getGitInfo();
 
 export default defineConfig({
-	plugins: [tailwindcss(), sveltekit()],
+	plugins: [
+		tailwindcss(),
+		sveltekit(),
+		VitePWA({
+			injectRegister: null,
+			registerType: 'autoUpdate',
+			includeAssets: ['favicon.svg', 'robots.txt'],
+			manifest: {
+				name: 'My Skeleton App',
+				short_name: 'Skeleton',
+				description: 'My Skeleton App built with SvelteKit',
+				theme_color: '#0f172a',
+				background_color: '#0f172a',
+				display: 'standalone',
+				scope: '/',
+				start_url: '/',
+				icons: [
+					{
+						src: '/pwa-192x192.png',
+						sizes: '192x192',
+						type: 'image/png',
+						purpose: 'any'
+					},
+					{
+						src: '/pwa-512x512.png',
+						sizes: '512x512',
+						type: 'image/png',
+						purpose: 'any'
+					},
+					{
+						src: '/pwa-512x512.png',
+						sizes: '512x512',
+						type: 'image/png',
+						purpose: 'maskable'
+					}
+				]
+			},
+			workbox: {
+				navigateFallback: '/offline',
+				navigateFallbackDenylist: [/^\/api\//],
+				runtimeCaching: [
+					{
+						urlPattern: /\.(?:js|css)$/i,
+						handler: 'StaleWhileRevalidate',
+						options: {
+							cacheName: 'assets-cache',
+							expiration: {
+								maxEntries: 128,
+								maxAgeSeconds: 60 * 60 * 24 * 30
+							}
+						}
+					},
+					{
+						urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|avif|ico)$/i,
+						handler: 'StaleWhileRevalidate',
+						options: {
+							cacheName: 'images-cache',
+							expiration: {
+								maxEntries: 128,
+								maxAgeSeconds: 60 * 60 * 24 * 30
+							}
+						}
+					},
+					{
+						urlPattern: /\.(?:woff2|woff|ttf|otf)$/i,
+						handler: 'StaleWhileRevalidate',
+						options: {
+							cacheName: 'fonts-cache',
+							expiration: {
+								maxEntries: 32,
+								maxAgeSeconds: 60 * 60 * 24 * 30
+							}
+						}
+					}
+				]
+			},
+			devOptions: {
+				enabled: true
+			}
+		})
+	],
 	define: {
 		__GIT_BRANCH__: JSON.stringify(gitInfo.branch),
 		__GIT_VERSION__: JSON.stringify(gitInfo.version),
