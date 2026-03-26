@@ -35,9 +35,9 @@ export default defineConfig({
 			registerType: 'autoUpdate',
 			includeAssets: ['favicon.svg', 'robots.txt'],
 			manifest: {
-				name: 'My Skeleton App',
-				short_name: 'Skeleton',
-				description: 'My Skeleton App built with SvelteKit',
+				name: 'Jeby Website',
+				short_name: 'Jeby Website',
+				description: 'Jeby Website built with SvelteKit',
 				theme_color: '#0f172a',
 				background_color: '#0f172a',
 				display: 'standalone',
