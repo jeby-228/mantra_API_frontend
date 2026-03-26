@@ -35,3 +35,4 @@ ci:
     just lint
     just test
     just build
+    pnpm run pwa:verify
