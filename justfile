@@ -1,5 +1,6 @@
 default:
-    @just --list
+    just --fmt --unstable 2> /dev/null
+    just --list --unsorted
 
 init:
     pnpm install
@@ -34,4 +35,3 @@ ci:
     just lint
     just test
     just build
-

@@ -25,7 +25,6 @@ function getGitInfo() {
 }
 
 const gitInfo = getGitInfo();
-const isDev = process.env.NODE_ENV === 'development';
 
 export default defineConfig({
 	plugins: [
