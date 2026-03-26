@@ -6,15 +6,15 @@ This is a **SvelteKit frontend** application ("Jeby Website" / Mantra API Fronte
 
 ### Quick reference
 
-| Task | Command |
-|------|---------|
-| Install deps | `pnpm install` |
-| Dev server | `pnpm run dev` (port 5173) |
-| Lint | `pnpm run lint` |
-| Type check | `pnpm run check` |
-| Tests | `pnpm run test` |
-| Build | `pnpm run build` |
-| Format | `pnpm run format` |
+| Task         | Command                    |
+| ------------ | -------------------------- |
+| Install deps | `pnpm install`             |
+| Dev server   | `pnpm run dev` (port 5173) |
+| Lint         | `pnpm run lint`            |
+| Type check   | `pnpm run check`           |
+| Tests        | `pnpm run test`            |
+| Build        | `pnpm run build`           |
+| Format       | `pnpm run format`          |
 
 See `justfile` for equivalent `just` shortcuts.
 
