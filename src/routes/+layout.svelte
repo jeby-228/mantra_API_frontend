@@ -5,7 +5,6 @@
 	import { onMount } from 'svelte';
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import { registerSW } from 'virtual:pwa-register';
 	injectSpeedInsights();
 	injectAnalytics();
 	// vercel speed insights and analytics
@@ -31,7 +30,7 @@
 	let searchQuery = $state('');
 
 	onMount(() => {
-		// 避免開發模式被既有 SW 快取影響，導致誤進離線頁。
+		// 清掉舊版 PWA 插件留下的 SW（例如 /dev-sw.js），避免 dev 出現 404 噪音。
 		if (dev && 'serviceWorker' in navigator) {
 			void (async () => {
 				const registrations = await navigator.serviceWorker.getRegistrations();
@@ -48,7 +47,9 @@
 			void goto('/', { replaceState: true });
 		}
 
-		registerSW({ immediate: true });
+		if (!dev && 'serviceWorker' in navigator) {
+			void navigator.serviceWorker.register('/service-worker.js');
+		}
 	});
 </script>
 

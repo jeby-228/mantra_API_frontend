@@ -46,19 +46,20 @@ async function verifySourceFiles() {
 
 	const rootLayout = await readText('src/routes/+layout.svelte');
 	assertCondition(
-		rootLayout.includes("import { registerSW } from 'virtual:pwa-register'"),
-		'Missing registerSW import in src/routes/+layout.svelte'
+		rootLayout.includes("navigator.serviceWorker.register('/service-worker.js')"),
+		'Missing service worker registration in src/routes/+layout.svelte'
 	);
+
+	const serviceWorkerSourcePath = 'src/service-worker.ts';
 	assertCondition(
-		rootLayout.includes('registerSW('),
-		'Missing registerSW call in src/routes/+layout.svelte'
+		fileExists(serviceWorkerSourcePath),
+		`Missing source service worker: ${serviceWorkerSourcePath}`
 	);
 }
 
 async function verifyBuildArtifacts() {
 	const manifestPath = '.svelte-kit/output/client/manifest.webmanifest';
-	const serviceWorkerPath = '.svelte-kit/output/client/sw.js';
-	const offlineRoutePath = '.svelte-kit/output/server/entries/pages/offline/_page.svelte.js';
+	const serviceWorkerPath = '.svelte-kit/output/client/service-worker.js';
 
 	assertCondition(
 		fileExists(manifestPath),
@@ -67,10 +68,6 @@ async function verifyBuildArtifacts() {
 	assertCondition(
 		fileExists(serviceWorkerPath),
 		`Missing build artifact: ${serviceWorkerPath} (run "pnpm run build" first)`
-	);
-	assertCondition(
-		fileExists(offlineRoutePath),
-		`Missing build artifact: ${offlineRoutePath} (offline page may not be bundled)`
 	);
 
 	if (fileExists(manifestPath)) {
@@ -109,8 +106,8 @@ async function verifyBuildArtifacts() {
 	if (fileExists(serviceWorkerPath)) {
 		const serviceWorkerText = await readText(serviceWorkerPath);
 		assertCondition(
-			serviceWorkerText.includes('precache(') || serviceWorkerText.includes('precacheAndRoute'),
-			'Service worker does not appear to include Workbox precache setup'
+			serviceWorkerText.includes('app-cache-') && serviceWorkerText.includes('addEventListener'),
+			'Service worker bundle does not appear to include expected handlers'
 		);
 	}
 }
