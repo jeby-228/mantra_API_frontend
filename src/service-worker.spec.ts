@@ -6,15 +6,15 @@ vi.mock('$service-worker', () => ({
 	version: 'test-version'
 }));
 
-type ServiceWorkerListeners = Record<string, (event: any) => void>;
+type ServiceWorkerListener = (event: unknown) => void;
 
 async function loadServiceWorker(options?: {
 	cacheMatchResult?: Response | undefined;
 	rootFallbackResult?: Response | undefined;
 	cacheKeys?: string[];
-	fetchImplementation?: (request: any) => Promise<Response>;
+	fetchImplementation?: (request: unknown) => Promise<Response>;
 }) {
-	const listeners: ServiceWorkerListeners = {};
+	const listeners = new Map<string, ServiceWorkerListener>();
 	const cache = {
 		addAll: vi.fn().mockResolvedValue(undefined),
 		put: vi.fn().mockResolvedValue(undefined)
@@ -24,7 +24,7 @@ async function loadServiceWorker(options?: {
 		open: vi.fn().mockResolvedValue(cache),
 		keys: vi.fn().mockResolvedValue(options?.cacheKeys ?? []),
 		delete: vi.fn().mockResolvedValue(true),
-		match: vi.fn((request: any) => {
+		match: vi.fn((request: unknown) => {
 			if (request === '/') return Promise.resolve(options?.rootFallbackResult);
 			return Promise.resolve(options?.cacheMatchResult);
 		})
@@ -36,8 +36,8 @@ async function loadServiceWorker(options?: {
 		clients: {
 			claim: vi.fn().mockResolvedValue(undefined)
 		},
-		addEventListener: vi.fn((type: string, callback: (event: any) => void) => {
-			listeners[type] = callback;
+		addEventListener: vi.fn((type: string, callback: ServiceWorkerListener) => {
+			listeners.set(type, callback);
 		})
 	};
 
@@ -45,7 +45,9 @@ async function loadServiceWorker(options?: {
 	vi.stubGlobal('self', selfMock);
 	vi.stubGlobal(
 		'fetch',
-		vi.fn(options?.fetchImplementation ?? (() => Promise.resolve(new Response('ok', { status: 200 }))))
+		vi.fn(
+			options?.fetchImplementation ?? (() => Promise.resolve(new Response('ok', { status: 200 })))
+		)
 	);
 
 	await import('./service-worker');
@@ -59,6 +61,17 @@ async function loadServiceWorker(options?: {
 	};
 }
 
+function getListener(
+	listeners: Map<string, ServiceWorkerListener>,
+	type: string
+): ServiceWorkerListener {
+	const handler = listeners.get(type);
+	if (!handler) {
+		throw new Error(`Expected ${type} listener to be registered`);
+	}
+	return handler;
+}
+
 describe('service-worker', () => {
 	beforeEach(() => {
 		vi.resetModules();
@@ -68,7 +81,7 @@ describe('service-worker', () => {
 
 	it('caches static assets and skips waiting on install', async () => {
 		const { listeners, cachesMock, cache, selfMock } = await loadServiceWorker();
-		const installHandler = listeners.install;
+		const installHandler = getListener(listeners, 'install');
 		expect(installHandler).toBeTypeOf('function');
 
 		let waitUntilPromise: Promise<unknown> | undefined;
@@ -88,7 +101,7 @@ describe('service-worker', () => {
 		const { listeners, cachesMock, selfMock } = await loadServiceWorker({
 			cacheKeys: ['app-cache-old', 'app-cache-test-version', 'another-old']
 		});
-		const activateHandler = listeners.activate;
+		const activateHandler = getListener(listeners, 'activate');
 		expect(activateHandler).toBeTypeOf('function');
 
 		let waitUntilPromise: Promise<unknown> | undefined;
@@ -107,7 +120,7 @@ describe('service-worker', () => {
 
 	it('returns early for non-cacheable fetch requests', async () => {
 		const { listeners, fetchMock } = await loadServiceWorker();
-		const fetchHandler = listeners.fetch;
+		const fetchHandler = getListener(listeners, 'fetch');
 		expect(fetchHandler).toBeTypeOf('function');
 
 		const respondWith = vi.fn();
@@ -116,7 +129,12 @@ describe('service-worker', () => {
 			respondWith
 		});
 		fetchHandler({
-			request: { method: 'GET', url: 'https://other.test/image.png', destination: 'image', mode: 'cors' },
+			request: {
+				method: 'GET',
+				url: 'https://other.test/image.png',
+				destination: 'image',
+				mode: 'cors'
+			},
 			respondWith
 		});
 		fetchHandler({
@@ -133,16 +151,24 @@ describe('service-worker', () => {
 		const { listeners, cachesMock, fetchMock } = await loadServiceWorker({
 			cacheMatchResult: cachedResponse
 		});
-		const fetchHandler = listeners.fetch;
+		const fetchHandler = getListener(listeners, 'fetch');
 
 		let responsePromise: Promise<Response> | undefined;
 		fetchHandler({
-			request: { method: 'GET', url: 'https://app.test/image.png', destination: 'image', mode: 'cors' },
+			request: {
+				method: 'GET',
+				url: 'https://app.test/image.png',
+				destination: 'image',
+				mode: 'cors'
+			},
 			respondWith: (promise: Promise<Response>) => {
 				responsePromise = promise;
 			}
 		});
 
+		if (!responsePromise) {
+			throw new Error('respondWith should be called for cacheable requests');
+		}
 		const response = await responsePromise;
 		expect(cachesMock.match).toHaveBeenCalledTimes(1);
 		expect(fetchMock).not.toHaveBeenCalled();
@@ -153,7 +179,7 @@ describe('service-worker', () => {
 		const { listeners, cachesMock, cache } = await loadServiceWorker({
 			fetchImplementation: () => Promise.resolve(new Response('network-ok', { status: 200 }))
 		});
-		const fetchHandler = listeners.fetch;
+		const fetchHandler = getListener(listeners, 'fetch');
 		const request = {
 			method: 'GET',
 			url: 'https://app.test/assets/logo.png',
@@ -169,6 +195,9 @@ describe('service-worker', () => {
 			}
 		});
 
+		if (!responsePromise) {
+			throw new Error('respondWith should be called for cacheable requests');
+		}
 		const response = await responsePromise;
 		expect(response.ok).toBe(true);
 		expect(cachesMock.open).toHaveBeenCalledWith('app-cache-test-version');
@@ -182,7 +211,7 @@ describe('service-worker', () => {
 			rootFallbackResult: rootResponse,
 			fetchImplementation: () => Promise.reject(new Error('network down'))
 		});
-		const fetchHandler = listeners.fetch;
+		const fetchHandler = getListener(listeners, 'fetch');
 
 		let responsePromise: Promise<Response> | undefined;
 		fetchHandler({
@@ -197,6 +226,9 @@ describe('service-worker', () => {
 			}
 		});
 
+		if (!responsePromise) {
+			throw new Error('respondWith should be called for navigation requests');
+		}
 		const response = await responsePromise;
 		expect(response).toBe(rootResponse);
 	});
@@ -206,7 +238,7 @@ describe('service-worker', () => {
 			rootFallbackResult: undefined,
 			fetchImplementation: () => Promise.reject(new Error('network down'))
 		});
-		const fetchHandler = listeners.fetch;
+		const fetchHandler = getListener(listeners, 'fetch');
 
 		let responsePromise: Promise<Response> | undefined;
 		fetchHandler({
@@ -221,6 +253,9 @@ describe('service-worker', () => {
 			}
 		});
 
+		if (!responsePromise) {
+			throw new Error('respondWith should be called for navigation requests');
+		}
 		const response = await responsePromise;
 		expect(response.status).toBe(503);
 		await expect(response.text()).resolves.toBe('Offline');
@@ -230,7 +265,7 @@ describe('service-worker', () => {
 		const { listeners } = await loadServiceWorker({
 			fetchImplementation: () => Promise.reject(new Error('network down'))
 		});
-		const fetchHandler = listeners.fetch;
+		const fetchHandler = getListener(listeners, 'fetch');
 
 		let responsePromise: Promise<Response> | undefined;
 		fetchHandler({
@@ -245,6 +280,9 @@ describe('service-worker', () => {
 			}
 		});
 
+		if (!responsePromise) {
+			throw new Error('respondWith should be called for cacheable requests');
+		}
 		await expect(responsePromise).rejects.toThrowError(
 			new TypeError('Network error and no cache available')
 		);
