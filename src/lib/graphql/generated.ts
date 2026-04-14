@@ -31,23 +31,9 @@ export type CreateMantraRecordInput = {
 	said_at?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type CreateMemberInput = {
-	email: Scalars['String']['input'];
-	name: Scalars['String']['input'];
-	password: Scalars['String']['input'];
-};
-
 export type CreateMessageBoardInput = {
 	message: Scalars['String']['input'];
 	quote_record_id: Scalars['ID']['input'];
-};
-
-export type CreateProductInput = {
-	product_description?: InputMaybe<Scalars['String']['input']>;
-	product_image?: InputMaybe<Scalars['String']['input']>;
-	product_name: Scalars['String']['input'];
-	product_price: Scalars['Float']['input'];
-	product_stock: Scalars['Int']['input'];
 };
 
 export type CreateQuoteRecordInput = {
@@ -137,26 +123,14 @@ export type Mutation = {
 	__typename?: 'Mutation';
 	createMantra: Mantra;
 	createMantraRecord: MantraRecord;
-	/** Create a new member */
-	createMember: Member;
 	createMessageBoard: MessageBoard;
-	/** Create a new product */
-	createProduct: Product;
 	createQuoteRecord: QuoteRecord;
 	deleteMantra: Scalars['Boolean']['output'];
 	deleteMantraRecord: Scalars['Boolean']['output'];
-	/** Delete a member (soft delete) */
-	deleteMember: Scalars['Boolean']['output'];
 	deleteMessageBoard: Scalars['Boolean']['output'];
-	/** Delete a product (soft delete) */
-	deleteProduct: Scalars['Boolean']['output'];
 	deleteQuoteRecord: Scalars['Boolean']['output'];
 	editMessageBoard: MessageBoard;
 	updateMantra: Mantra;
-	/** Update an existing member */
-	updateMember: Member;
-	/** Update an existing product */
-	updateProduct: Product;
 	updateQuoteRecord: QuoteRecord;
 };
 
@@ -168,16 +142,8 @@ export type MutationCreateMantraRecordArgs = {
 	input: CreateMantraRecordInput;
 };
 
-export type MutationCreateMemberArgs = {
-	input: CreateMemberInput;
-};
-
 export type MutationCreateMessageBoardArgs = {
 	input: CreateMessageBoardInput;
-};
-
-export type MutationCreateProductArgs = {
-	input: CreateProductInput;
 };
 
 export type MutationCreateQuoteRecordArgs = {
@@ -192,15 +158,7 @@ export type MutationDeleteMantraRecordArgs = {
 	id: Scalars['ID']['input'];
 };
 
-export type MutationDeleteMemberArgs = {
-	id: Scalars['ID']['input'];
-};
-
 export type MutationDeleteMessageBoardArgs = {
-	id: Scalars['ID']['input'];
-};
-
-export type MutationDeleteProductArgs = {
 	id: Scalars['ID']['input'];
 };
 
@@ -216,16 +174,6 @@ export type MutationEditMessageBoardArgs = {
 export type MutationUpdateMantraArgs = {
 	id: Scalars['ID']['input'];
 	input: UpdateMantraInput;
-};
-
-export type MutationUpdateMemberArgs = {
-	id: Scalars['ID']['input'];
-	input: UpdateMemberInput;
-};
-
-export type MutationUpdateProductArgs = {
-	id: Scalars['ID']['input'];
-	input: UpdateProductInput;
 };
 
 export type MutationUpdateQuoteRecordArgs = {
@@ -355,19 +303,6 @@ export type QuoteRecordsResponse = {
 export type UpdateMantraInput = {
 	content?: InputMaybe<Scalars['String']['input']>;
 	description?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type UpdateMemberInput = {
-	email: Scalars['String']['input'];
-	name: Scalars['String']['input'];
-};
-
-export type UpdateProductInput = {
-	product_description?: InputMaybe<Scalars['String']['input']>;
-	product_image?: InputMaybe<Scalars['String']['input']>;
-	product_name?: InputMaybe<Scalars['String']['input']>;
-	product_price?: InputMaybe<Scalars['Float']['input']>;
-	product_stock?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type UpdateQuoteRecordInput = {
